@@ -6,81 +6,95 @@
 #    By: shaegels <shaegels@student.s19.be>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/12/12 16:28:03 by shaegels          #+#    #+#              #
-#    Updated: 2025/12/12 16:58:00 by shaegels         ###   ########.fr        #
+#    Updated: 2025/12/15 13:13:01 by shaegels         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 import random
 import time
 
-# -------------------------
-# Generator: event stream
-# -------------------------
-def game_event_stream(n):
+
+def game_event_stream(total_events):
+    """
+    Generate a stream of game events.
+
+    Args:
+        total_events (int): Number of events to generate.
+
+    Yields:
+        dict: A game event containing id, player, action, and level.
+    """
     players = ["alice", "bob", "charlie", "diana", "eve"]
     actions = ["killed monster", "found treasure", "leveled up"]
 
-    for i in range(1, n + 1):
-        player = random.choice(players)
-        action = random.choice(actions)
-        level = random.randint(1, 20)
-
+    for event_id in range(1, total_events + 1):
         yield {
-            "id": i,
-            "player": player,
-            "action": action,
-            "level": level
+            "id": event_id,
+            "player": random.choice(players),
+            "action": random.choice(actions),
+            "level": random.randint(1, 20),
         }
 
 
-# -------------------------
-# Fibonacci generator
-# -------------------------
 def fibonacci():
-    a, b = 0, 1
+    """
+    Generate an infinite Fibonacci sequence.
+
+    Yields:
+        int: Next Fibonacci number.
+    """
+    first, second = 0, 1
+
     while True:
-        yield a
-        a, b = b, a + b
+        yield first
+        first, second = second, first + second
 
 
-# -------------------------
-# Prime number generator
-# -------------------------
 def prime_numbers():
-    n = 2
+    """
+    Generate an infinite sequence of prime numbers.
+
+    Yields:
+        int: Next prime number.
+    """
+    number = 2
+
     while True:
         is_prime = True
-        for i in range(2, int(n**0.5) + 1):
-            if n % i == 0:
+
+        for divisor in range(2, int(number ** 0.5) + 1):
+            if number % divisor == 0:
                 is_prime = False
                 break
+
         if is_prime:
-            yield n
-        n += 1
+            yield number
+
+        number += 1
 
 
-# -------------------------
-# Main program
-# -------------------------
 def main():
+    """
+    Run the game data stream processor and generator demonstrations.
+    """
     print("=== Game Data Stream Processor ===")
 
-    total = 1000
-    print(f"Processing {total} game events...")
+    total_events = 1000
+    print(f"Processing {total_events} game events...")
 
-    start = time.time()  # measure processing duration
+    start_time = time.time()
 
-    events = game_event_stream(total)
+    events = game_event_stream(total_events)
 
     count = 0
     high_level = 0
     treasure = 0
-    levelup = 0
+    level_up = 0
 
     for event in events:
         count += 1
 
-        # Show only first 3 events
+        # Display only the first three events
         if count <= 3:
             print(
                 f"Event {event['id']}: Player {event['player']} "
@@ -94,24 +108,31 @@ def main():
             treasure += 1
 
         if event["action"] == "leveled up":
-            levelup += 1
+            level_up += 1
 
-    duration = time.time() - start
+    duration = time.time() - start_time
 
     print("=== Stream Analytics ===")
     print("Total events processed:", count)
     print("High-level players (10+):", high_level)
     print("Treasure events:", treasure)
-    print("Level-up events:", levelup)
+    print("Level-up events:", level_up)
     print("Memory usage: Constant (streaming)")
     print(f"Processing time: {duration:.4f} seconds")
 
     print("=== Generator Demonstration ===")
+
     fib = fibonacci()
-    print("Fibonacci sequence (first 10):", ", ".join(str(next(fib)) for _ in range(10)))
+    print(
+        "Fibonacci sequence (first 10):",
+        ", ".join(str(next(fib)) for _ in range(10)),
+    )
 
     primes = prime_numbers()
-    print("Prime numbers (first 5):", ", ".join(str(next(primes)) for _ in range(5)))
+    print(
+        "Prime numbers (first 5):",
+        ", ".join(str(next(primes)) for _ in range(5)),
+    )
 
 
 if __name__ == "__main__":
